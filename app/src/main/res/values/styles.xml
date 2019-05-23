@@ -1,0 +1,25 @@
+<resources>
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+    <style name="GreenText" parent="TextAppearance.AppCompat">
+        <item name="android:textColor">#00FF00</item>
+    </style>
+
+    <style name="GreenText.Large">
+        <item name="android:textSize">22sp</item>
+    </style>
+
+    <style name="GreenTextLarge" parent="GreenText">
+        <item name="android:textSize">22sp</item>
+    </style>
+
+    <style name="MyAppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="buttonStyle">@style/Widget.AppCompat.Button.Borderless</item>
+    </style>
+</resources>

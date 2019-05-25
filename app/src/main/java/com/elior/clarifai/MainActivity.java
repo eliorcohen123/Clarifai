@@ -172,6 +172,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
                     ClarifaiClient client = new ClarifaiBuilder(getString(R.string.API_KEY))
                             .buildSync();
 
+                    // Get response from Bitmap
                     ClarifaiResponse<List<ClarifaiOutput<Region>>> response =
                             client.getDefaultModels().demographicsModel().predict()
                                     .withInputs(ClarifaiInput.forImage(ClarifaiImage.of(fileFromBytes)))
@@ -179,12 +180,18 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
 
                     try {
                         Region region = response.get().get(0).data().get(0);
+
+                        // Get name
                         if (Objects.requireNonNull(region.genderAppearances().get(0).name()).equals(getString(R.string.masculine))) {
                             myGender.setText(getString(R.string.Man));
                         } else if (Objects.requireNonNull(region.genderAppearances().get(0).name()).equals(getString(R.string.feminine))) {
                             myGender.setText(getString(R.string.Woman));
                         }
+
+                        // Get age
                         myAge.setText(region.ageAppearances().get(0).name());
+
+                        // put image
                         myImage.setImageBitmap(bitmap);
                         myImage.setRotation(90);
                     } catch (Exception e) {
@@ -326,6 +333,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
             ClarifaiClient client = new ClarifaiBuilder(getString(R.string.API_KEY))
                     .buildSync();
 
+            // Get response from Bitmap
             ClarifaiResponse<List<ClarifaiOutput<Region>>> response =
                     client.getDefaultModels().demographicsModel().predict()
                             .withInputs(ClarifaiInput.forImage(ClarifaiImage.of(bitmapdata)))
@@ -333,12 +341,18 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
 
             try {
                 Region region = response.get().get(0).data().get(0);
+
+                // Get Gender
                 if (Objects.requireNonNull(region.genderAppearances().get(0).name()).equals(getString(R.string.masculine))) {
                     myGender.setText(getString(R.string.Man));
                 } else if (Objects.requireNonNull(region.genderAppearances().get(0).name()).equals(getString(R.string.feminine))) {
                     myGender.setText(getString(R.string.Woman));
                 }
+
+                // Get age
                 myAge.setText(region.ageAppearances().get(0).name());
+
+                // put image
                 myImage.setImageBitmap(photo);
             } catch (Exception e) {
                 Toast.makeText(MainActivity.this, getString(R.string.fail_picture), Toast.LENGTH_LONG).show();

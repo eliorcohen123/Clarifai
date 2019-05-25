@@ -172,7 +172,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
                     ClarifaiClient client = new ClarifaiBuilder(getString(R.string.API_KEY))
                             .buildSync();
 
-                    // Get response from Bitmap
+                    // Get response from file
                     ClarifaiResponse<List<ClarifaiOutput<Region>>> response =
                             client.getDefaultModels().demographicsModel().predict()
                                     .withInputs(ClarifaiInput.forImage(ClarifaiImage.of(fileFromBytes)))

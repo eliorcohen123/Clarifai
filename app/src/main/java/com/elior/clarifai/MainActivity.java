@@ -246,8 +246,12 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
 
     // Stops taking pictures on the internal camera
     private void stop_camera() {
-        camera.stopPreview();
-        camera.release();
+        try {
+            camera.stopPreview();
+            camera.release();
+        } catch (Exception e) {
+
+        }
     }
 
     public void surfaceChanged(SurfaceHolder arg0, int arg1, int arg2, int arg3) {

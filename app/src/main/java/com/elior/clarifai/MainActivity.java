@@ -181,17 +181,17 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
                     try {
                         Region region = response.get().get(0).data().get(0);
 
-                        // Get name
+                        // Get Gender
                         if (Objects.requireNonNull(region.genderAppearances().get(0).name()).equals(getString(R.string.masculine))) {
                             myGender.setText(getString(R.string.Man));
                         } else if (Objects.requireNonNull(region.genderAppearances().get(0).name()).equals(getString(R.string.feminine))) {
                             myGender.setText(getString(R.string.Woman));
                         }
 
-                        // Get age
+                        // Get Age
                         myAge.setText(region.ageAppearances().get(0).name());
 
-                        // put image
+                        // Put Image
                         myImage.setImageBitmap(bitmap);
                         myImage.setRotation(90);
                     } catch (Exception e) {
@@ -349,10 +349,10 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
                     myGender.setText(getString(R.string.Woman));
                 }
 
-                // Get age
+                // Get Age
                 myAge.setText(region.ageAppearances().get(0).name());
 
-                // put image
+                // Put Image
                 myImage.setImageBitmap(photo);
             } catch (Exception e) {
                 Toast.makeText(MainActivity.this, getString(R.string.fail_picture), Toast.LENGTH_LONG).show();

@@ -143,7 +143,7 @@
             android:layout_gravity="center_vertical"
             android:layout_weight="1"
             android:background="@drawable/custom_button"
-            android:text="@string/gallery"
+            android:text="@string/ext_camera"
             android:textColor="@color/colorWhite"
             android:textSize="12sp" />
     </LinearLayout>

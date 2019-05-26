@@ -219,7 +219,11 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
     // Take picture from the internal camera
     private void captureImage() {
         // TODO Auto-generated method stub
-        camera.takePicture(shutterCallback, rawCallback, jpegCallback);
+        try {
+            camera.takePicture(shutterCallback, rawCallback, jpegCallback);
+        } catch (Exception e) {
+
+        }
     }
 
     // Open internal camera
@@ -266,7 +270,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         // TODO Auto-generated method stub
     }
 
-    // Open external camera + option to gallery
+    // Open external camera + option to ext_camera
     private void gallery() {
         btnOpenExtCam.setOnClickListener(new View.OnClickListener() {
             @Override

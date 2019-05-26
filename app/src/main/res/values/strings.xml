@@ -5,7 +5,7 @@
     <string name="open_camera">Open Camera</string>
     <string name="say_cheese">Say Cheese!</string>
     <string name="close_camera">Close Camera</string>
-    <string name="gallery">Gallery</string>
+    <string name="ext_camera">Ext Camera</string>
     <string name="Man">Man</string>
     <string name="Woman">Woman</string>
     <string name="fail_picture">Face recognition failed, please take a picture again…</string>

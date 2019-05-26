@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Clarifai</string>
     <string name="your_gender">Your Gender:</string>
-    <string name="your_age">Your age:</string>
+    <string name="your_age">Your Age:</string>
     <string name="open_camera">Open Camera</string>
     <string name="say_cheese">Say Cheese!</string>
     <string name="close_camera">Close Camera</string>

@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.hardware.Camera;
@@ -193,7 +194,12 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
 
                         // Put Image
                         myImage.setImageBitmap(bitmap);
-                        myImage.setRotation(90);
+
+                        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+                            myImage.setRotation(90);
+                        } else if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                            myImage.setRotation(180);
+                        }
                     } catch (Exception e) {
                         Toast.makeText(MainActivity.this, getString(R.string.fail_picture), Toast.LENGTH_LONG).show();
                     }
@@ -245,7 +251,11 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         } catch (Exception e) {
             return;
         }
-        camera.setDisplayOrientation(90);
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+            camera.setDisplayOrientation(90);
+        } else if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            camera.setDisplayOrientation(180);
+        }
     }
 
     // Stops taking pictures on the internal camera

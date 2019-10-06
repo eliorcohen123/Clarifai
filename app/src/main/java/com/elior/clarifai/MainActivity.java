@@ -51,6 +51,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
     private SurfaceHolder surfaceHolder;
     private Camera.PictureCallback rawCallback, jpegCallback;
     private Camera.ShutterCallback shutterCallback;
+    private byte[] bitmapData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -122,104 +123,95 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
 
         jpegCallback = new Camera.PictureCallback() {
             public void onPictureTaken(byte[] data, Camera camera) {
-
+                // Convert bitmap to byte array
                 Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
                 ByteArrayOutputStream blob = new ByteArrayOutputStream();
-                bitmap.compress(Bitmap.CompressFormat.PNG, 0 /* Ignored for PNGs */, blob);
+                Bitmap convertedImage = getResizedBitmap(bitmap);
+                convertedImage.compress(Bitmap.CompressFormat.PNG, 0 /* Ignored for PNGs */, blob);
+                bitmapData = blob.toByteArray();
 
+                // Create a file to write bitmap data
                 File file = new File(getCacheDir(), getString(R.string.child_file));
                 try {
                     file.createNewFile();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                // convert File to byte[]
-                ByteArrayOutputStream bos = new ByteArrayOutputStream();
-                ObjectOutputStream oos = null;
+
+                // Write the bytes in file
+                FileOutputStream fos = null;
                 try {
-                    oos = new ObjectOutputStream(bos);
+                    fos = new FileOutputStream(file);
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+                try {
+                    Objects.requireNonNull(fos).write(bitmapData);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
                 try {
-                    Objects.requireNonNull(oos).writeObject(file);
+                    Objects.requireNonNull(fos).flush();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
                 try {
-                    bos.close();
+                    Objects.requireNonNull(fos).close();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+
+                ClarifaiClient client = new ClarifaiBuilder(getString(R.string.API_KEY))
+                        .buildSync();
+
+                // Get response from file
+                ClarifaiResponse<List<ClarifaiOutput<Region>>> response =
+                        client.getDefaultModels().demographicsModel().predict()
+                                .withInputs(ClarifaiInput.forImage(ClarifaiImage.of(bitmapData)))
+                                .executeSync();
+
                 try {
-                    Objects.requireNonNull(oos).close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                data = bos.toByteArray();
+                    Region region = response.get().get(0).data().get(0);
 
-                // convert byte[] to File
-                ByteArrayInputStream bis = new ByteArrayInputStream(data);
-                ObjectInputStream ois = null;
-                try {
-                    ois = new ObjectInputStream(bis);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                File fileFromBytes;
-                try {
-                    fileFromBytes = (File) Objects.requireNonNull(ois).readObject();
-
-                    ClarifaiClient client = new ClarifaiBuilder(getString(R.string.API_KEY))
-                            .buildSync();
-
-                    // Get response from file
-                    ClarifaiResponse<List<ClarifaiOutput<Region>>> response =
-                            client.getDefaultModels().demographicsModel().predict()
-                                    .withInputs(ClarifaiInput.forImage(ClarifaiImage.of(fileFromBytes)))
-                                    .executeSync();
-
-                    try {
-                        Region region = response.get().get(0).data().get(0);
-
-                        // Get Gender
-                        if (Objects.requireNonNull(region.genderAppearances().get(0).name()).equals(getString(R.string.masculine))) {
-                            myGender.setText(getString(R.string.Man));
-                        } else if (Objects.requireNonNull(region.genderAppearances().get(0).name()).equals(getString(R.string.feminine))) {
-                            myGender.setText(getString(R.string.Woman));
-                        }
-
-                        // Get Age
-                        myAge.setText(region.ageAppearances().get(0).name());
-
-                        // Put Image
-                        myImage.setImageBitmap(bitmap);
-
-                        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-                            myImage.setRotation(90);
-                        } else if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                            myImage.setRotation(180);
-                        }
-                    } catch (Exception e) {
-                        Toast.makeText(MainActivity.this, getString(R.string.fail_picture), Toast.LENGTH_LONG).show();
+                    // Get Gender
+                    if (Objects.requireNonNull(region.genderAppearances().get(0).name()).equals(getString(R.string.masculine))) {
+                        myGender.setText(getString(R.string.Man));
+                    } else if (Objects.requireNonNull(region.genderAppearances().get(0).name()).equals(getString(R.string.feminine))) {
+                        myGender.setText(getString(R.string.Woman));
                     }
-                } catch (ClassNotFoundException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                try {
-                    bis.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                try {
-                    Objects.requireNonNull(ois).close();
-                } catch (IOException e) {
-                    e.printStackTrace();
+
+                    // Get Age
+                    myAge.setText(region.ageAppearances().get(0).name());
+
+                    // Put Image
+                    myImage.setImageBitmap(bitmap);
+
+                    if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+                        myImage.setRotation(90);
+                    } else if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                        myImage.setRotation(180);
+                    }
+                } catch (Exception e) {
+                    Toast.makeText(MainActivity.this, getString(R.string.fail_picture), Toast.LENGTH_LONG).show();
                 }
             }
         };
+    }
+
+    private Bitmap getResizedBitmap(Bitmap image) {
+
+        int width = image.getWidth();
+        int height = image.getHeight();
+
+        float bitmapRatio = (float) width / (float) height;
+        if (bitmapRatio > 1) {
+            width = 500;
+            height = (int) (width / bitmapRatio);
+        } else {
+            height = 500;
+            width = (int) (height * bitmapRatio);
+        }
+        return Bitmap.createScaledBitmap(image, width, height, true);
     }
 
     // Take picture from the internal camera
